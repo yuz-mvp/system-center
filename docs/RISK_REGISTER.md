@@ -1,0 +1,14 @@
+# Registro de Riscos
+
+| Risco | Severidade | Impacto | Proxima acao sugerida |
+| --- | --- | --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` ausente no `.env.example`. | Alto | O admin server-side depende dessa variavel e pode falhar em runtime. Tambem dificulta setup local correto. | Documentar a variavel no exemplo de ambiente sem valor real e validar secrets no ambiente de deploy. |
+| Metadados publicos Lovable em `src/routes/__root.tsx`. | Medio | SEO, social preview e autoria publica ainda apontam para conteudo herdado da Lovable, gerando ruido de marca e risco reputacional. | Substituir metadata por conteudo oficial YUZ em uma tarefa controlada de frontend/SEO. |
+| Dependencia de `@lovable.dev/vite-tanstack-config`. | Alto | Build, plugins, aliases, env injection e Cloudflare dependem de uma abstracao externa Lovable. Remocao sem substituto pode quebrar o app. | Mapear tudo que o pacote injeta e criar configuracao Vite/TanStack/Cloudflare propria antes de remover. |
+| OAuth Google depende de `@lovable.dev/cloud-auth-js`. | Alto | Login social fica acoplado ao runtime Lovable e pode nao funcionar fora desse ambiente. | Migrar OAuth para fluxo Supabase Auth direto ou provider proprio validado no ambiente alvo. |
+| Dashboards ainda mockados. | Alto | O produto pode parecer funcional sem entregar dados reais, criando risco de expectativa comercial e decisao baseada em dados falsos. | Priorizar fonte real de eventos/KPIs, contratos de dados e estados vazios/loading/erro. |
+| Necessidade de `admin_global` inicial. | Alto | Sem um usuario bootstrap com `admin_global`, a area admin fica inacessivel para operacao inicial. | Definir procedimento seguro de seed/manual grant para o primeiro admin em ambiente local, staging e producao. |
+| Risco de permissoes em `field_modules`. | Alto | Politicas atuais permitem membros da organizacao inserir/atualizar status de modulos, o que pode permitir contratacao/operacao indevida. | Revisar modelo de roles para `field_modules` e restringir escrita a admins/organizadores autorizados. |
+| Divergencia entre `package-lock.json` e `bun.lock`. | Medio | Instalacoes com gerenciadores diferentes podem produzir arvores de dependencia divergentes. | Padronizar npm, documentar o fluxo e decidir se `bun.lock` sera removido em tarefa separada. |
+| Cloudflare precisa de validacao SSR/TanStack Start. | Alto | O build pode passar localmente e falhar em SSR/edge por diferencas de runtime, entrada server ou compatibilidade. | Rodar build/preview/deploy de validacao em ambiente Cloudflare com rotas autenticadas e server functions. |
+| `process.env` precisa ser validado no runtime Cloudflare. | Alto | Server functions e clientes Supabase leem `process.env`; no Cloudflare isso pode exigir binding/config especifica. | Confirmar como o plugin injeta envs no runtime e criar teste de smoke para variaveis obrigatorias. |
